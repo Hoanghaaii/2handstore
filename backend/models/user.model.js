@@ -44,9 +44,27 @@ const userSchema = mongoose.Schema(
             default: null
         },
         
-        purchasedProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
-        soldProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
-        sellingProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+        purchasedProducts: [
+            {
+                productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+                quantity: { type: Number }, // Thêm trường quantity
+                _id: false
+            }
+        ],
+        soldProducts: [
+            {
+                productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+                quantity: { type: Number }, // Thêm trường quantity
+                _id: false
+            }
+        ],
+        sellingProducts: [
+            {
+                productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+                quantity: { type: Number }, // Thêm trường quantity
+                _id: false
+            }
+        ],
         resetPasswordToken: String,
         resetPasswordTokenExpiresAt: Date,
         verifyToken: String,

@@ -4,6 +4,24 @@ import bcrypt from 'bcryptjs';
 import  User  from '../models/user.model.js'
 import { sendResetPasswordEmail, sendVerificationEmail } from '../mailtrap/emails.js';
 import crypto from 'crypto';
+import { postImage} from './image.controller.js'
+
+
+export const getUserById = async (req, res)=>{
+    const  userId  = req.params.id;
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+        const userResponse = {...user._doc};
+        delete userResponse.password;
+        res.status(200).json({ success: true, user: userResponse });
+    } catch (error) {
+        console.log("An error occurred: "+error.message);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+}
 
 export const signUp = async (req, res) => {
     const { email, password, name } = req.body;
@@ -145,28 +163,83 @@ export const resetPassword = async(req, res) => {
 }
 
 export const updateAccount = async (req, res) => {
-    const { name, avatar, age, gender, phoneNumber, address } = req.body;
-    const userId = req.params.id;
+    const { name, age, gender, phoneNumber, address } = req.body;
+    const file = req.file;  // File ảnh đại diện
+    console.log(file)
+    const userId = req.params.id;  // ID người dùng từ URL
     try {
-        // Cập nhật thông tin mà không thay đổi email
+        // Tìm user theo userId
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        // Cập nhật ảnh đại diện nếu có file tải lên
+        let avatar = user.avatar;  // Giữ ảnh cũ nếu không có ảnh mới
+        if (file) {
+            // Upload ảnh mới lên S3
+            const imageRes = await postImage(req, 'avatar');  // Hàm postImage xử lý việc upload
+            if (!imageRes.success) {
+                return res.status(500).json({ success: false, message: "Avatar upload failed" });
+            }
+            console.log(imageRes)
+            avatar = imageRes.imageUrl;  // Lưu đường dẫn ảnh mới
+        }
+
+        // Cập nhật thông tin: nếu có giá trị mới thì dùng, nếu không thì giữ giá trị cũ
         const updatedUser = await User.findByIdAndUpdate(userId, {
-            name,
-            avatar,
-            age,
-            gender,
-            phoneNumber,
-            address
+            name: name || user.name,               // Nếu không có tên mới, giữ tên cũ
+            avatar: avatar,                        // Cập nhật avatar mới hoặc giữ cái cũ
+            age: age || user.age,                  // Giữ giá trị cũ nếu không có giá trị mới
+            gender: gender || user.gender,         // Giữ giá trị cũ nếu không có giá trị mới
+            phoneNumber: phoneNumber || user.phoneNumber,  // Giữ giá trị cũ nếu không có giá trị mới
+            address: address || user.address       // Giữ giá trị cũ nếu không có giá trị mới
         }, { new: true, runValidators: true });
 
         if (!updatedUser) {
             return res.status(404).json({ success: false, message: "Failed to update: user not found" });
         }
-        res.status(200).json({ success: true, message: "Update successfully" });
+
+        // Trả về phản hồi thành công
+        res.status(200).json({ success: true, message: "Account updated successfully", user: updatedUser });
     } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
+        console.error("An error occurred: " + error.message);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 };
 
+export const resendVerificationCode = async (req, res) => {
+    const { email } = req.body;
 
+    try {
+        // Kiểm tra nếu email không được cung cấp
+        if (!email) {
+            return res.status(400).json({ success: false, message: "Email is required" });
+        }
 
+        // Tìm người dùng dựa trên email
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
 
+        // Kiểm tra xem người dùng đã xác minh chưa
+        if (user.isVerified) {
+            return res.status(400).json({ success: false, message: "User is already verified" });
+        }
+
+        // Tạo mã xác minh mới
+        const verificationCode = generateVerificationCode();
+        user.verifyToken = verificationCode;
+        user.verifyTokenExpiresAt = Date.now() + 3600000; // 1 giờ
+        await user.save();
+
+        // Gửi email xác minh mới
+        await sendVerificationEmail(user.email, verificationCode);
+
+        res.status(200).json({ success: true, message: "Verification code resent successfully" });
+    } catch (error) {
+        console.log("An error occurred: " + error.message);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+};

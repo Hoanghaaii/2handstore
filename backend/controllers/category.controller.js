@@ -12,6 +12,19 @@ export const getCategory= async (req, res)=>{
     }
 }
 
+export const getCategoryById = async (req, res) => {
+    const id = req.params.id;
+    try {
+        const category = await Category.findById(id);
+        if (!category) {
+            return res.status(404).json({ success: false, message: "Category not found" });
+        }
+        return res.status(200).json({ success: true, category });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+}
+
 export const getCategoryByName = async (req, res) => {
     const keyword = req.params.name; // Lấy từ khóa từ tham số
     try {

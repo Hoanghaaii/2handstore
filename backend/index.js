@@ -7,6 +7,8 @@ import imageRoutes from './routes/image.route.js';
 import eventRoutes from './routes/event.route.js';
 import productRoutes from './routes/product.router.js';
 import categoryRouter from './routes/category.router.js';
+import cartRouter from './routes/cart.router.js';
+import orderRouter from './routes/order.router.js';
 import cors from 'cors';
 
 const app = express();
@@ -34,6 +36,8 @@ app.use('/api/event/', imageRoutes);
 app.use('/api/event/', eventRoutes);
 app.use('/api/product/', productRoutes);
 app.use('/api/category/', categoryRouter);
+app.use('/api/cart/', cartRouter);
+app.use('/api/order/', orderRouter )
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

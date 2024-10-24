@@ -16,7 +16,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
 import {
@@ -41,20 +40,28 @@ import { GoPerson } from "react-icons/go";
 import { Avatar } from "@radix-ui/react-avatar"
 import { AvatarFallback, AvatarImage } from "./avatar"
 import { useRouter } from "next/navigation"
+import Cart from "./cartitems"
 
 
 const Header = () => {
   const { isAuthenticated, checkAuth, user, signout } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [openAlert, setOpenAlert] = useState(false); // Thêm state để quản lý AlertDialog
+  const [isOpen, setIsOpen] = useState(false); // Thêm state để quản lý trạng thái mở của Sheet
   const router = useRouter()
+  console.log(user)
+
+  const handleSell = () => {
+    router.push('/product/add-product'); // Đường dẫn tới trang đăng bán sản phẩm
+  };
+
   useEffect(() => {
     const checkUserAuth = async () => {
       await checkAuth();
       setLoading(false);
     };
     checkUserAuth();
-  }, []);
+  }, [checkAuth]);
 
   const handleSignout = () => {
     setOpenAlert(true); // Mở AlertDialog
@@ -62,20 +69,25 @@ const Header = () => {
 
   const confirmSignout = () => {
     signout(); // Gọi hàm signout từ store
+    router.push('/')
     setOpenAlert(false); // Đóng AlertDialog sau khi đăng xuất
   };
+  
+  const handleGoToCart = () => {
+    router.push('/cart'); // Điều hướng tới trang giỏ hàng
+    setIsOpen(false); // Đóng Sheet khi đi đến giỏ hàng
+  }
 
   return (
     <>
-      <div className='flex items-center justify-between w-full min-h-10 dark:bg-black p-3 border-separate border-2 border-x-0 border-t-0'>
+      <div className='py-2 flex items-center justify-between w-full min-h-10 bg-gradient-to-r dark:from-slate-700 dark:to-blue-900 from-blue-50 to-blue-600 border-separate border-2 border-x-0 border-t-0'>
         <div className='flex items-center gap-4'>
           <Link href={'/'}>
               <Image quality={100} src="/logo.png" width={80} height={80} alt="Logo" className="object-contain rounded-full shadow-lg hover:scale-105" />
           </Link>
         </div>
         <div className='flex flex-col items-start rounded-lg p-3'>
-            <h1 className='text-2xl text-center'><i>Nơi giao dịch đồ <b>Second Hand </b>số 1 Việt Nam </i></h1>
-            <h1 className='text-sm opacity-20 text-slate-500 dark:text-slate-100 text-center'><i>Do Admin tự bình chọn</i></h1>
+            <h1 className='text-3xl font-bold text-center'><i>Nơi giao dịch đồ <b>Second Hand </b>Uy Tín </i></h1>
         </div>
         <div className='mr-20'>
           <ModeToggle /> {/* Di chuyển ModeToggle ra bên phải */}
@@ -88,7 +100,7 @@ const Header = () => {
             <FiLoader className='animate-spin' />
           ) : isAuthenticated ? (
             <>
-              <Button className='bg-inherit text-inherit outline-none border-none shadow-none bg-white hover:bg-slate-100 dark:text-inherit dark:bg-inherit dark:text-white dark:hover:bg-slate-800'>
+              <Button onClick={handleSell} className='bg-inherit text-inherit outline-none border-none shadow-none bg-white hover:bg-slate-100 dark:text-inherit dark:bg-inherit dark:text-white dark:hover:bg-slate-800'>
                 Đăng bán
               </Button>
               <DropdownMenu>
@@ -99,7 +111,7 @@ const Header = () => {
                   <DropdownMenuLabel className="flex justify-between">
                     <div className=" m-2">
                       <Avatar className='w-10 h-10 shadow-sky-500 shadow-md'>
-                          <AvatarImage src={'https://avatars.githubusercontent.com/u/124599?v=4'} className='w-15 h-15 rounded-full' />
+                          <AvatarImage src={user?.avatar ?? ''} className='w-15 h-15 rounded-full' />
                           <AvatarFallback className='text-2xl'>img</AvatarFallback>
                       </Avatar>
                     </div>
@@ -117,6 +129,9 @@ const Header = () => {
                     <DropdownMenuItem className=" cursor-pointer" onClick={()=>{
                       router.push('/auth/update-account')
                     }}>Shop của tôi</DropdownMenuItem>
+                      <DropdownMenuItem className=" cursor-pointer" onClick={()=>{
+                        router.push('/order')
+                      }}>Đơn hàng</DropdownMenuItem>
                     <DropdownMenuItem className=" cursor-pointer" onClick={()=>{
                       router.push('/auth/update-account')
                     }}>Thông báo</DropdownMenuItem>
@@ -129,15 +144,20 @@ const Header = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Sheet>
-                <SheetTrigger><CiShoppingCart size={23} /></SheetTrigger>
-                <SheetContent>
+              <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger>
+                  <CiShoppingCart size={23} />
+                </SheetTrigger>
+                <SheetContent className="max-h-[100vh] overflow-y-auto"> {/* Thêm các lớp CSS ở đây */}
                   <SheetHeader>
                     <SheetTitle>Giỏ hàng của bạn</SheetTitle>
                     <SheetDescription>Kiểm tra giỏ hàng của bạn trước khi thanh toán</SheetDescription>
+                    <Button onClick={handleGoToCart}  className=" justify-center hover:scale-x-105 transition duration-300">Vào trang giỏ hàng</Button>
                   </SheetHeader>
+                  <Cart />
                 </SheetContent>
               </Sheet>
+
             </>
           ) : (
             <>

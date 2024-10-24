@@ -34,7 +34,7 @@ export default function Home() {
     },
   });
 
-  const { signin, isLoading, error, message, checkAuth } = useAuthStore();
+  const { signin, isLoading, message, checkAuth } = useAuthStore();
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -97,7 +97,6 @@ export default function Home() {
               Đăng ký
             </Link>
           </div>
-          {error && <div className="text-red-500">{error}</div>}
           {message && <div className="text-green-500">{message}</div>}
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? <AiOutlineLoading className="animate-spin" /> : "Đăng nhập"}

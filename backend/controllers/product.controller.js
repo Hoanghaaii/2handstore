@@ -1,14 +1,38 @@
 import Product from '../models/product.model.js';
-import { postImage} from './image.controller.js'
+import { postImage } from './image.controller.js';
 import User from '../models/user.model.js';
 
 export const getProduct = async (req, res) => {
     try {
-        const products = await Product.find({});
+        // Lấy page và limit từ query params, mặc định page = 1 và limit = 10
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        // Tính toán số sản phẩm cần bỏ qua (skip)
+        const skip = (page - 1) * limit;
+
+        // Đếm tổng số sản phẩm
+        const totalProducts = await Product.countDocuments();
+
+        // Lấy sản phẩm với phân trang
+        const products = await Product.find({})
+            .sort({status:1, createdAt: -1 })
+            .skip(skip)  // Bỏ qua các sản phẩm của các trang trước
+            .limit(limit);  // Lấy số sản phẩm giới hạn trên mỗi trang
+
+        // Kiểm tra nếu không có sản phẩm nào
         if (!products || products.length === 0) {
             return res.status(404).json({ success: false, message: "No products found" });
         }
-        return res.status(200).json({ success: true, products });
+
+        // Trả về dữ liệu cùng với thông tin phân trang
+        return res.status(200).json({
+            success: true,
+            totalProducts,  // Tổng số sản phẩm
+            totalPages: Math.ceil(totalProducts / limit),  // Tổng số trang
+            currentPage: page,  // Trang hiện tại
+            products  // Danh sách sản phẩm của trang hiện tại
+        });
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
@@ -29,53 +53,87 @@ export const getProductById = async (req, res) => {
 
 export const getProductByCategory = async (req, res) => {
     const categoryName = req.params.category; // Lấy tên danh mục từ tham số đường dẫn
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
     try {
         // Tìm tất cả sản phẩm có danh mục chứa tên danh mục được cung cấp
-        const products = await Product.find({ category: { $regex: categoryName, $options: 'i' } });
+        const products = await Product.find({
+            category: { $regex: categoryName, $options: 'i' }
+        })
+        .sort({status:1, createdAt: -1 })
+        .skip(skip)
+        .limit(limit); // Lấy số sản phẩm giới hạn trên mỗi trang
+
+        // Đếm tổng số sản phẩm trong danh mục
+        const totalProducts = await Product.countDocuments({
+            category: { $regex: categoryName, $options: 'i' }
+        });
 
         // Kiểm tra nếu không tìm thấy sản phẩm
         if (products.length === 0) {
             return res.status(404).json({ success: false, message: "No products found in this category" });
         }
 
-        // Trả về danh sách sản phẩm tìm thấy
-        return res.status(200).json({ success: true, products });
+        // Trả về danh sách sản phẩm tìm thấy cùng thông tin phân trang
+        return res.status(200).json({
+            success: true,
+            totalProducts,
+            totalPages: Math.ceil(totalProducts / limit),
+            currentPage: page,
+            products
+        });
     } catch (error) {
-        // Xử lý lỗi và trả về phản hồi lỗi
         return res.status(500).json({ success: false, message: error.message });
     }
 };
 
-
 export const getProductByName = async (req, res) => {
     const name = req.params.name; // Lấy tên từ tham số đường dẫn
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
     try {
         // Tìm tất cả sản phẩm có tên chứa từ khóa với regex
-        const products = await Product.find({ name: { $regex: name, $options: 'i' } });
+        const products = await Product.find({
+            name: { $regex: name, $options: 'i' }
+        })
+        .sort({status:1, createdAt: -1 })
+        .skip(skip)
+        .limit(limit); // Lấy số sản phẩm giới hạn trên mỗi trang
+
+        // Đếm tổng số sản phẩm có tên chứa từ khóa
+        const totalProducts = await Product.countDocuments({
+            name: { $regex: name, $options: 'i' }
+        });
 
         // Kiểm tra nếu không tìm thấy sản phẩm
         if (products.length === 0) {
             return res.status(404).json({ success: false, message: "No products found" });
         }
 
-        // Trả về danh sách sản phẩm tìm thấy
-        return res.status(200).json({ success: true, products });
+        // Trả về danh sách sản phẩm tìm thấy cùng thông tin phân trang
+        return res.status(200).json({
+            success: true,
+            totalProducts,
+            totalPages: Math.ceil(totalProducts / limit),
+            currentPage: page,
+            products
+        });
     } catch (error) {
-        // Xử lý lỗi và trả về phản hồi lỗi
         console.error("An error occurred: " + error.message);
         return res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 };
 
-
 export const postProduct = async (req, res) => {
-    const { name, description, price, category, quantity } = req.body;
+    const { name, description, price, category, quantity, location } = req.body;
     const file = req.file;
     const userId = req.userId;
-    console.log(req.body)
-    console.log(req.file)
 
-    if (!name ||!description ||!price ||!category ||!quantity ||!file) {
+    if (!name || !description || !price || !category || !quantity || !file || !location) {
         return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
@@ -90,7 +148,7 @@ export const postProduct = async (req, res) => {
             return res.status(404).json({ success: false, message: "User not found" });
         }
 
-        const authorName = user.name; // Lấy tên tác giả
+        const authorEmail = user.email;
 
         // Upload ảnh lên S3
         const imageRes = await postImage(req, 'product');
@@ -104,13 +162,16 @@ export const postProduct = async (req, res) => {
             description,
             price,
             category,
+            location,
             quantity,
-            author: authorName,       // Lưu tên tác giả
+            author: authorEmail,       // Lưu tên tác giả
             imageUrl: imageRes.imageUrl,  // Lưu đường dẫn ảnh
         });
 
         // Lưu sản phẩm vào MongoDB
         await newProduct.save();
+        user.sellingProducts.push({ productId: newProduct._id, quantity });
+        await user.save();
 
         // Trả về phản hồi thành công
         return res.status(201).json({

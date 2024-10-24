@@ -12,7 +12,7 @@ interface User {
   email: string;
   address: string;
   phoneNumber: string;
-  verified: boolean;
+  isVerified: boolean;
   age: number;
   gender: string;
   avatar: string | null;
@@ -33,6 +33,8 @@ interface AuthState {
   forgotPassword: (email: string) => Promise<void>;
   resetPassword: (password: string) => Promise<void>;
   updateAccount: (id: string, accountData: FormData) => Promise<void>;
+  getUserById: (userId: string) => Promise<void>;
+  resendVerificationCode: (email: string)=> Promise<void>
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -43,20 +45,38 @@ export const useAuthStore = create<AuthState>((set) => ({
   isLoading: false,
   error: null,
   message: null,
-
+  getUserById: async (userId) => {
+    set({ isLoading: true, error: null });
+    try {
+      const token = Cookies.get("token");
+      const response = await axios.get(`${API_URL}/get-user-by-id/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      set({ user: response.data.user, isLoading: false });
+    } catch (error) {
+      const errorMessage = axios.isAxiosError(error)
+        ? error.response?.data?.message || "Error fetching user"
+        : "An unknown error occurred";
+      set({ error: errorMessage, isLoading: false });
+    }
+  },
   signup: async (email, password, name) => {
     set({ isLoading: true, error: null });
     try {
       const response = await axios.post(`${API_URL}/signup`, { email, password, name });
       set({ user: response.data.user, token: response.data.token, isAuthenticated: true, isLoading: false });
     } catch (error) {
-      const errorMessage = axios.isAxiosError(error) ? 
-        error.response?.data?.message || "Error signing up" : 
-        "An unknown error occurred";
+      // Kiểm tra xem lỗi có phải là lỗi Axios không
+      const errorMessage = axios.isAxiosError(error)
+        ?  "Có lỗi xảy ra trong quá trình đăng ký" // Truy cập message từ response
+        : "Có lỗi không xác định xảy ra"; // Nếu không phải lỗi Axios
       set({ error: errorMessage, isLoading: false });
-      throw error;
+      throw error; // Ném lỗi ra ngoài để xử lý nếu cần
     }
   },
+  
 
     signin: async (email, password) => {
       set({ isLoading: true, error: null });
@@ -177,6 +197,20 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ error: errorMessage, isLoading: false });
       throw error;
     }
+  },
+  resendVerificationCode: async (email) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.post(`${API_URL}/resend-verify-email`, { email });
+      set({ message: response.data.message, isLoading: false });
+    } catch (error) {
+      const errorMessage = axios.isAxiosError(error)
+        ? error.response?.data?.message || "Lỗi khi gửi mã xác thực"
+        : "Đã có lỗi không xác định xảy ra";
+      set({ error: errorMessage, isLoading: false });
+      throw error;
+    }
   }
+  
   
 }));
