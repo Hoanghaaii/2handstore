@@ -46,14 +46,14 @@ const EventDetail: React.FC<Props> = ({ params }) => {
         height={8000} 
         className="rounded-lg mb-4" 
       />
-      <p className="text-lg mb-2">Location: {event.location}</p>
+      <p className="text-lg mb-2">Địa điểm: {event.location}</p>
       <div className=" flex">
       <p className="text-lg text-green-500 mb-2 space-x-2"> {new Date(event.dateFrom).toLocaleDateString()}</p> -
       <p className="text-lg text-red-500 mb-4 space-x-2"> {new Date(event.dateTo).toLocaleDateString()}</p>
       </div>
       <div className=" p-4">
-        <h2 className="text-xl font-semibold">Thông tin chi tiết</h2>
-        <p className="text-gray-700">{event.content}</p>
+        <h2 className="text-2xl font-semibold">Thông tin chi tiết</h2>
+        <p className=" text-xl">{event.content}</p>
       </div>
     </div>
   );

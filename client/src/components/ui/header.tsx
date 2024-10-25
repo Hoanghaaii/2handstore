@@ -80,14 +80,11 @@ const Header = () => {
 
   return (
     <>
-      <div className='py-2 flex items-center justify-between w-full min-h-10 bg-gradient-to-r dark:from-slate-700 dark:to-blue-900 from-blue-50 to-blue-600 border-separate border-2 border-x-0 border-t-0'>
+      <div className='py-2 flex items-center justify-between w-full min-h-10 border-separate border-2 border-x-0 border-t-0 dark:bg-black'>
         <div className='flex items-center gap-4'>
           <Link href={'/'}>
-              <Image quality={100} src="/logo.png" width={80} height={80} alt="Logo" className="object-contain rounded-full shadow-lg hover:scale-105" />
+              <p className="text-4xl p-5 font-bold italic dark:text-white">2HAND STORE</p>
           </Link>
-        </div>
-        <div className='flex flex-col items-start rounded-lg p-3'>
-            <h1 className='text-3xl font-bold text-center'><i>Nơi giao dịch đồ <b>Second Hand </b>Uy Tín </i></h1>
         </div>
         <div className='mr-20'>
           <ModeToggle /> {/* Di chuyển ModeToggle ra bên phải */}

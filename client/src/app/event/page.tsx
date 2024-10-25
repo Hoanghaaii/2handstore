@@ -48,7 +48,7 @@ const Page = () => {
                 <h3 className="text-3xl font-bold mb-4">
                   {event.title}
                 </h3>
-                <p className="text-gray-400 mb-6">{event.description}</p>
+                <p className=" mb-6">{event.description}</p>
                 <p className="text-gray-500 flex mb-5 text-lg">
                     Từ: 
                     <span className="text-green-500 mx-4 mr-12">{new Date(event.dateFrom).toLocaleDateString()}</span> 
