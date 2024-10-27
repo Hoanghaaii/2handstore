@@ -12,8 +12,10 @@ import orderRouter from './routes/order.router.js';
 import zaloRouter from './zalopay/zalo.router.js'
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import paymentRouter from './vietqr/payment.router.js'
 
 const app = express();
+app.use(express.static('public'))
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
@@ -21,7 +23,7 @@ app.use(bodyParser.json()); // Sử dụng bodyParser cho toàn bộ app
 // Cấu hình CORS trước khi định nghĩa các route
 app.use(cors({
     origin: process.env.CLIENT_URL, // Địa chỉ frontend của bạn
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Các phương thức bạn muốn cho phép
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Các phương thức bạn muốn cho phép
     credentials: true, // Nếu bạn cần cookie hoặc thông tin xác thực
 }));
 
@@ -42,6 +44,7 @@ app.use('/api/category/', categoryRouter);
 app.use('/api/cart/', cartRouter);
 app.use('/api/order/', orderRouter );
 app.use('/api/zalopay/', zaloRouter);
+app.use('/api/payment', paymentRouter)
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

@@ -22,8 +22,9 @@ interface ProductStore {
   totalProducts: number; 
   fetchProducts: (page: number, limit: number) => void;
   fetchProductById: (id: string) => void;
-  fetchProductsByName: (name: string, page: number, limit: number) => void; // Cập nhật để nhận thêm tham số
-  fetchProductsByCategory: (category: string, page: number, limit: number) => void; // Thêm vào đây
+  fetchProductsByName: (name: string, page: number, limit: number) => void;
+  fetchProductsByCategory: (category: string, page: number, limit: number) => void;
+  fetchProductsByOwner: () => void; // Thêm phương thức fetchProductsByOwner
 }
 
 const API_URL =
@@ -44,7 +45,7 @@ export const useProductStore = create<ProductStore>((set) => ({
       const response = await axios.get(`${API_URL}?page=${page}&limit=${limit}`, {
         withCredentials: true,
       });
-      console.log(response.data)
+      console.log(response.data);
       set({
         products: response.data.products,
         totalProducts: response.data.totalProducts,
@@ -72,35 +73,51 @@ export const useProductStore = create<ProductStore>((set) => ({
   fetchProductsByName: async (name: string, page: number, limit: number) => {
     set({ loading: true, error: null });
     try {
-        const response = await axios.get(`${API_URL}/search/${name}?page=${page}&limit=${limit}`, {
-            withCredentials: true,
-        });
-        set({
-            products: response.data.products, 
-            totalProducts: response.data.totalProducts,
-            loading: false,
-        });
-    } catch (error) {
-        console.error('Error fetching products by name:', error);
-        set({ error: 'Failed to fetch products by name', loading: false });
-    }
-},
-fetchProductsByCategory: async (category: string, page: number, limit: number) => {
-  set({ loading: true, error: null });
-  try {
-      const response = await axios.get(`${API_URL}/get-by-category/${category}?page=${page}&limit=${limit}`, {
-          withCredentials: true,
+      const response = await axios.get(`${API_URL}/search/${name}?page=${page}&limit=${limit}`, {
+        withCredentials: true,
       });
       set({
-          products: response.data.products, 
-          totalProducts: response.data.totalProducts,
-          loading: false,
+        products: response.data.products, 
+        totalProducts: response.data.totalProducts,
+        loading: false,
       });
-  } catch (error: any) {
+    } catch (error) {
+      console.error('Error fetching products by name:', error);
+      set({ error: 'Failed to fetch products by name', loading: false });
+    }
+  },
+
+  fetchProductsByCategory: async (category: string, page: number, limit: number) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await axios.get(`${API_URL}/get-by-category/${category}?page=${page}&limit=${limit}`, {
+        withCredentials: true,
+      });
+      set({
+        products: response.data.products, 
+        totalProducts: response.data.totalProducts,
+        loading: false,
+      });
+    } catch (error: any) {
       console.error('Error fetching products by category:', error.response ? error.response.data : error.message);
       set({ error: 'Failed to fetch products by category', loading: false });
-  }
-},
+    }
+  },
 
-
+  // Thêm phương thức fetchProductsByOwner
+  fetchProductsByOwner: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await axios.get(`${API_URL}/get-by-owner`, {
+        withCredentials: true,
+      });
+      set({
+        products: response.data, // Lưu danh sách sản phẩm
+        loading: false,
+      });
+    } catch (error) {
+      console.error('Error fetching products by owner:', error);
+      set({ error: 'Failed to fetch products by owner', loading: false });
+    }
+  },
 }));

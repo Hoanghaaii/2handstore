@@ -185,3 +185,26 @@ export const postProduct = async (req, res) => {
         return res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 };
+
+
+export const getProductBySeller = async (req, res) => {
+    const userId = req.userId; // Lấy userId từ req (middleware đã gán)
+
+    try {
+        // Tìm kiếm người dùng dựa trên userId
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'Người dùng không tồn tại.' });
+        }
+        const email = user.email; // Lấy email từ đối tượng người dùng
+
+        // Tìm tất cả sản phẩm của người bán dựa trên email
+        const products = await Product.find({ author: email }).sort({status:1, createdAt: -1 });
+        
+        // Trả về danh sách sản phẩm
+        res.status(200).json(products);
+    } catch (error) {
+        console.error('Error fetching products by owner:', error);
+        res.status(500).json({ error: 'Lỗi khi lấy sản phẩm.' });
+    }
+};

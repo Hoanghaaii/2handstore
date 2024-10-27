@@ -14,9 +14,11 @@ interface OrderProduct {
   price: number;
   author: string;
 }
+
 interface Buyer {
-  email: string; // Hoặc các thuộc tính khác mà bạn muốn lưu trữ
-  // Thêm các thuộc tính khác nếu cần
+  email: string;
+  name: string; // Thêm tên người mua
+  avatar: string; // Thêm avatar người mua
 }
 
 interface Order {
@@ -27,8 +29,10 @@ interface Order {
   shippingAddress: string;
   paymentMethod: string;
   paymentStatus: string;
+  paymentLink: string | null;
   createdAt: Date;
   status: string;
+  orderCode: string;
 }
 
 interface OrderStore {
@@ -36,15 +40,16 @@ interface OrderStore {
   order: Order | null;
   loading: boolean;
   error: string | null;
-  totalOrders: number; // Thêm thuộc tính này để lưu tổng số đơn hàng
+  totalOrders: number;
   fetchOrders: () => void;
   fetchOrderById: (id: string) => void;
   placeOrder: (orderData: {
     paymentMethod: string;
     shippingAddress: string;
-    
   }) => void;
+  fetchOrderBySeller: () => void; // Phương thức lấy đơn hàng theo người bán
   cancelOrder: (orderId: string) => void; // Phương thức hủy đơn hàng
+  updateStatus: (orderId: string, status: string) => Promise<void>; // Cập nhật trạng thái đơn hàng
 }
 
 const API_URL =
@@ -57,7 +62,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
   order: null,
   loading: true,
   error: null,
-  totalOrders: 0, // Khởi tạo totalOrders
+  totalOrders: 0, // Khởi tạo tổng số đơn hàng
 
   // Lấy tất cả đơn hàng
   fetchOrders: async () => {
@@ -96,16 +101,15 @@ export const useOrderStore = create<OrderStore>((set) => ({
   placeOrder: async (orderData) => {
     set({ loading: true, error: null });
     try {
-      // Chỉ truyền paymentMethod và shippingAddress theo yêu cầu của backend
       const { paymentMethod, shippingAddress } = orderData;
-  
+
       const response = await axios.post(API_URL, {
         paymentMethod,
         shippingAddress,
       }, {
         withCredentials: true,
       });
-  
+
       set((state) => ({
         orders: [...state.orders, response.data.order], // Thêm đơn hàng mới vào danh sách
         loading: false,
@@ -115,7 +119,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
       set({ error: 'Failed to place order', loading: false });
     }
   },
-  
+
   // Hủy đơn hàng
   cancelOrder: async (orderId: string) => {
     set({ loading: true, error: null });
@@ -132,4 +136,44 @@ export const useOrderStore = create<OrderStore>((set) => ({
       set({ error: 'Failed to cancel order', loading: false });
     }
   },
-}))
+
+  // Lấy đơn hàng theo người bán
+  fetchOrderBySeller: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await axios.get(`${API_URL}/get-by-seller`, {
+        withCredentials: true,
+      });
+      console.log(response.data);
+      set({
+        orders: response.data, // Cập nhật danh sách đơn hàng của người bán
+        loading: false,
+      });
+    } catch (error) {
+      console.error('Error fetching orders by seller:', error);
+      set({ error: 'Failed to fetch orders by seller', loading: false });
+    }
+  },
+
+  // Cập nhật trạng thái đơn hàng
+  updateStatus: async (orderId: string, orderStatus: string): Promise<void> => {
+    set({ loading: true, error: null });
+    try {
+      const response = await axios.patch(`${API_URL}/${orderId}/status`, { orderStatus }, {
+        withCredentials: true,
+      });
+
+      // Cập nhật danh sách đơn hàng trong state
+      set((state) => ({
+        orders: state.orders.map(order => 
+          order._id === orderId ? { ...order, status: response.data.status } : order
+        ),
+        loading: false,
+      }));
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      set({ error: 'Failed to update order status', loading: false });
+      throw error; // Ném lỗi để có thể xử lý ở nơi gọi
+    }
+  },
+}));

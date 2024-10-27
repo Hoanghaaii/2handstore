@@ -124,7 +124,7 @@ const Header = () => {
                       router.push('/auth/account')
                     }}>Tài khoản</DropdownMenuItem>
                     <DropdownMenuItem className=" cursor-pointer" onClick={()=>{
-                      router.push('/auth/update-account')
+                      router.push('/my-shop')
                     }}>Shop của tôi</DropdownMenuItem>
                       <DropdownMenuItem className=" cursor-pointer" onClick={()=>{
                         router.push('/order')
