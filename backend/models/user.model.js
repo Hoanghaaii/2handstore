@@ -24,7 +24,6 @@ const userSchema = mongoose.Schema(
         },
         avatar: {
             type: String,
-            default: "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=identicon&f=y"
         },
         age:{
             type: Number,

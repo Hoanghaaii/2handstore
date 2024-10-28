@@ -8,7 +8,7 @@ const orderSchema = mongoose.Schema(
                 productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
                 quantity: { type: Number, required: true },
                 price: { type: Number, required: true }, // Giá từng sản phẩm tại thời điểm đặt hàng
-                author: { type: String, required: true }
+                author: { type: String, required: true },
             }
         ],
         totalAmount: { type: Number, required: true }, // Tổng số tiền cho đơn hàng

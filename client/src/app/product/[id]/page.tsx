@@ -32,18 +32,28 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
     setQuantity(prevQuantity => (prevQuantity > 1 ? prevQuantity - 1 : 1));
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (product) {
         const imageUrls = Array.isArray(product.imageUrl) ? product.imageUrl : [product.imageUrl];
-        addCartItem(product._id, quantity, product.price, imageUrls, product.name);
+        if(product.quantity===0){
+          toast("Thêm sản phẩm vào giỏ hàng thất bại vì hết hàng!", {
+            style: {
+                backgroundColor: '#ff0000', // Background color for success message
+                color: '#ffffff', // Text color for success message
+            },
+        });
+        return;
+        }
+        await addCartItem(product._id, quantity, product.price, imageUrls, product.name);
         toast.success("Thêm sản phẩm vào giỏ hàng thành công!", {
             style: {
-              backgroundColor: '#008000', // Màu nền
-              color: '#ffffff', // Màu chữ
+                backgroundColor: '#008000', // Background color for success message
+                color: '#ffffff', // Text color for success message
             },
-          });
+        });
     }
-  };
+};
+
 
   if (loading) {
     return <p>Loading...</p>;

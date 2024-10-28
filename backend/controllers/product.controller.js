@@ -208,3 +208,41 @@ export const getProductBySeller = async (req, res) => {
         res.status(500).json({ error: 'Lỗi khi lấy sản phẩm.' });
     }
 };
+
+export const updateProduct = async (req, res)=>{
+    const id = req.params.id
+    const {name, description, price, category, quantity, location, status } = req.body;
+    try {
+    const product = await Product.findById(id)
+    if(!product){
+        return res.status(404).json({success: false, message: "Product not found"})
+    }
+    product.name = name || product.name;
+    product.description = description || product.description;
+    product.price = price || product.price;
+    product.category = category || product.category;
+    product.quantity = quantity !== undefined ? quantity : product.quantity;
+    product.location = location || product.location;
+    product.status = status || product.status;
+    await product.save()
+    return res.status(200).json({success: true, message: "Product updated successfully", product})
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+
+}
+
+export const deleteProduct = async (req, res) => {
+    const id = req.params.id;
+    try {
+        const product = await Product.findById(id);
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Product not found" });
+        }
+
+        await Product.findByIdAndDelete(id); // Xóa sản phẩm
+        return res.status(200).json({ success: true, message: "Product deleted successfully" });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+};

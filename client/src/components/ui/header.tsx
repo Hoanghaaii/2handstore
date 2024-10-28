@@ -97,9 +97,6 @@ const Header = () => {
             <FiLoader className='animate-spin' />
           ) : isAuthenticated ? (
             <>
-              <Button onClick={handleSell} className='bg-inherit text-inherit outline-none border-none shadow-none bg-white hover:bg-slate-100 dark:text-inherit dark:bg-inherit dark:text-white dark:hover:bg-slate-800'>
-                Đăng bán
-              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost"><GoPerson /></Button>
@@ -121,19 +118,21 @@ const Header = () => {
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
                     <DropdownMenuItem className=" cursor-pointer" onClick={()=>{
-                      router.push('/auth/account')
-                    }}>Tài khoản</DropdownMenuItem>
-                    <DropdownMenuItem className=" cursor-pointer" onClick={()=>{
                       router.push('/my-shop')
                     }}>Shop của tôi</DropdownMenuItem>
+                    <DropdownMenuItem className=" cursor-pointer" onClick={()=>{
+                      router.push('/my-shop/my-product')
+                    }}>Sản phẩm của tôi</DropdownMenuItem>
+                    <DropdownMenuSeparator/>
                       <DropdownMenuItem className=" cursor-pointer" onClick={()=>{
                         router.push('/order')
-                      }}>Đơn hàng</DropdownMenuItem>
-                    <DropdownMenuItem className=" cursor-pointer" onClick={()=>{
-                      router.push('/auth/update-account')
-                    }}>Thông báo</DropdownMenuItem>
+                      }}>Đơn hàng tôi mua</DropdownMenuItem>
                   </DropdownMenuGroup>
+                  <DropdownMenuSeparator/>
                   <DropdownMenuGroup>
+                  <DropdownMenuItem className=" cursor-pointer" onClick={()=>{
+                      router.push('/auth/account')
+                    }}>Tài khoản</DropdownMenuItem>
                     <DropdownMenuItem onClick={handleSignout} className=" cursor-pointer">
                       Đăng xuất
                     </DropdownMenuItem>
@@ -145,13 +144,13 @@ const Header = () => {
                 <SheetTrigger>
                   <CiShoppingCart size={23} />
                 </SheetTrigger>
-                <SheetContent className="max-h-[100vh] overflow-y-auto"> {/* Thêm các lớp CSS ở đây */}
+                <SheetContent className="max-h-[100vh] overflow-y-auto my-5"> {/* Thêm các lớp CSS ở đây */}
                   <SheetHeader>
                     <SheetTitle>Giỏ hàng của bạn</SheetTitle>
-                    <SheetDescription>Kiểm tra giỏ hàng của bạn trước khi thanh toán</SheetDescription>
-                    <Button onClick={handleGoToCart}  className=" justify-center hover:scale-x-105 transition duration-300">Vào trang giỏ hàng</Button>
+                    <SheetDescription>Kiểm tra giỏ hàng của bạn</SheetDescription>
                   </SheetHeader>
-                  <Cart />
+                  <Cart/>
+                  <Button onClick={handleGoToCart}  className="flex justify-center hover:scale-x-105 transition duration-300 my-5 w-full">Vào trang giỏ hàng</Button>
                 </SheetContent>
               </Sheet>
 

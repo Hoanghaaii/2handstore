@@ -19,35 +19,26 @@ import { Button } from "./button";
 
 const components: { title: string; href: string; description: string }[] = [
   {
-    title: "MXH",
-    href: "/docs/primitives/progress",
-    description: "Hiển thị những bài đăng liên quan đến đồ 2Hand",
+    title: "Bán hàng",
+    href: "/product/add-product",
+    description: "Bạn muốn bán hàng? Đăng tải sản phẩm lên đây!!!",
   },
   {
-    title: "Phát thanh",
-    href: "/docs/primitives/alert-dialog",
-    description: "Nơi giao lưu của tất cả mọi người, từ users đến admins",
+    title: "Hướng dẫn",
+    href: "/guide",
+    description: "Hướng dẫn sử dụng Website 2Hand Store",
   },
   {
-    title: "Thông báo",
-    href: "/docs/primitives/hover-card",
-    description: "Tất cả thông báo được hiển thị ở đây",
-  },
-  {
-    title: "Khiếu nại",
-    href: "/docs/primitives/scroll-area",
-    description: "Khiếu nại mọi vấn đề với admin",
-  },
-  {
-    title: "Tuyển dụng",
-    href: "/docs/primitives/tabs",
-    description: "Cập nhật thông tin tuyển dụng",
+    title: "Admin",
+    href: "/admin-infor",
+    description: "Thông tin, mxh của Admin",
   },
   {
     title: "Ủng hộ",
-    href: "/docs/primitives/tooltip",
+    href: "/donate",
     description: "Ủng hộ hoa hồng cho admin :))",
   },
+  
 ];
 
 export function Navbar() {
@@ -71,11 +62,11 @@ export function Navbar() {
               <li className="bg-red-400 rounded-md">
                 <NavigationMenuLink asChild>
                   <a
-                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-zinc-200 to-zinc-400 hover:scale-105 transition duration-300 p-6 no-underline outline-none focus:shadow-md"
                     href="/product"
                   >
-                    <div className="mb-2 mt-4 text-lg font-medium">Hàng 2Hand</div>
-                    <p className="text-sm leading-tight text-muted-foreground">
+                    <div className="mb-2 mt-4 text-2xl">Hàng 2Hand</div>
+                    <p className="text-sm leading-tight text-slate-500">
                       Tổng hợp sản phẩm hàng 2Hand chất lượng cao
                     </p>
                   </a>
@@ -106,7 +97,7 @@ export function Navbar() {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Phát thanh</NavigationMenuTrigger>
+          <NavigationMenuTrigger>Khác</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
               {components.map((component) => (
@@ -120,13 +111,6 @@ export function Navbar() {
               ))}
             </ul>
           </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link href="/docs" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Hướng dẫn
-            </NavigationMenuLink>
-          </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
           <form onSubmit={handleSearch} className="flex"> {/* Thêm form để xử lý tìm kiếm */}

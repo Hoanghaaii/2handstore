@@ -56,7 +56,8 @@ const UpdateAccount = () => {
     if (user?._id) {
       try {
         await updateAccount(user._id, formData);
-        toast('Thành công! (Reset trang để thấy sự thay đổi)', {
+        await checkAuth()
+        toast('Cập nhật thành công!', {
           style: {
             background: 'green',
             color: 'white',

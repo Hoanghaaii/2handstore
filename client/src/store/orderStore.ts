@@ -6,6 +6,7 @@ interface Product {
   name: string;
   price: number;
   imageUrl: string;
+  
 }
 
 interface OrderProduct {
@@ -19,6 +20,7 @@ interface Buyer {
   email: string;
   name: string; // Thêm tên người mua
   avatar: string; // Thêm avatar người mua
+  phoneNumber: string;
 }
 
 interface Order {

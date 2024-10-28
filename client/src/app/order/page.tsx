@@ -19,9 +19,11 @@ import { useRouter } from 'next/navigation'; // Import useRouter từ Next.js
 
 const Order = () => {
   const { orders, order, loading, error, fetchOrders, cancelOrder, fetchOrderById } = useOrderStore(); // Thêm fetchOrderById
-  const { checkoutUrl, handleCreatePayment, getPaymentLinkInformation } = usePaymentStore(); // Sử dụng paymentStore
+  const { checkoutUrl, handleCreatePayment } = usePaymentStore(); // Sử dụng paymentStore
   const [openOrderId, setOpenOrderId] = useState<string | null>(null); // Trạng thái cho dropdown
+  const [searchTerm, setSearchTerm] = useState<string>(''); // State for search term
   const router = useRouter(); // Khởi tạo router
+  
   useEffect(() => {
     fetchOrders(); // Gọi hàm để lấy danh sách đơn hàng khi component được mount
   }, [fetchOrders]);
@@ -32,42 +34,50 @@ const Order = () => {
 
   const handlePayment = async (orderId: string) => {
     try {
-        // Gọi fetchOrderById để lấy thông tin đơn hàng từ store
         await fetchOrderById(orderId);
-        
-        // Kiểm tra nếu đã có link thanh toán, nếu không thì tạo mới
-        let paymentLink =order?.paymentLink
-        
+        let paymentLink = order?.paymentLink;
+
         if (!paymentLink) {
-            await handleCreatePayment(orderId); // Giả định handleCreatePayment trả về checkoutUrl
-            paymentLink = checkoutUrl; // Sử dụng checkoutUrl từ handleCreatePayment
+            await handleCreatePayment(orderId);
+            paymentLink = checkoutUrl;
         }
 
         if (paymentLink) {
-            router.push(paymentLink); // Chuyển hướng đến link thanh toán
-            console.log("Hello")
+            router.push(paymentLink);
         } else {
             throw new Error("Không thể tạo link thanh toán.");
         }
     } catch (error) {
         console.error("Error in handlePayment:", error);
-        // Có thể thêm thông báo lỗi cho người dùng nếu cần
     }
-};
-
-
+  };
 
   const handleCancelOrder = async (orderId: string) => {
     if (confirm("Bạn có chắc chắn muốn hủy đơn hàng này?")) {
-      await cancelOrder(orderId); // Gọi hàm hủy đơn hàng từ store
-      fetchOrders(); // Tải lại danh sách đơn hàng
+      await cancelOrder(orderId);
+      fetchOrders();
     }
   };
+
+  // Filter orders based on the search term
+  const filteredOrders = orders.filter(order => {
+    const matchesOrderCode = order.orderCode.toString().includes(searchTerm.toLowerCase().trim());
+    const matchesShippingAddress = typeof order.shippingAddress === 'string' && order.shippingAddress.toLowerCase().includes(searchTerm.toLowerCase().trim());
+    
+    const matchesProductName = order.products.some(product => {
+      // Ensure productId and name are defined before calling toLowerCase()
+      const productName = product.productId?.name; // Optional chaining
+      return productName && productName.toLowerCase().includes(searchTerm.toLowerCase().trim());
+    });
+  
+    return matchesOrderCode || matchesShippingAddress || matchesProductName;
+  });
+  
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p>Loading...</p> {/* Hiển thị loading */}
+        <p>Loading...</p>
       </div>
     );
   }
@@ -75,7 +85,7 @@ const Order = () => {
   if (error) {
     return (
       <div className="text-red-500 text-center">
-        <p>Error: {error}</p> {/* Hiển thị lỗi nếu có */}
+        <p>Error: {error}</p>
       </div>
     );
   }
@@ -83,8 +93,20 @@ const Order = () => {
   return (
     <div className="p-4">
       <h2 className="text-xl font-semibold">Danh sách đơn hàng mua</h2>
-      <h2 className=" m-3 mb-5 flex items-center text-red-500 text-sm"><FiAlertTriangle />Chú ý: nếu muốn huỷ đơn hàng, hãy bấm nút huỷ ở chính trang này, đừng bấm huỷ ở trang mã qr thanh toán!!!</h2>
-      {orders.length === 0 ? (
+      <h2 className="m-3 mb-5 flex items-center text-red-300 text-sm">
+        <FiAlertTriangle />Chú ý: nếu muốn huỷ đơn hàng, hãy bấm nút huỷ ở chính trang này, đừng bấm huỷ ở trang mã qr thanh toán!!!
+      </h2>
+      {/* Search Input Field */}
+      <div className="mb-8 flex items-center justify-center mx-5 rounded-3xl">
+        <input
+          type="text"
+          placeholder="Tìm kiếm theo mã đơn hàng, địa chỉ hoặc tên sản phẩm"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="p-2 border rounded-2xl w-full"
+        />
+      </div>
+      {filteredOrders.length === 0 ? (
         <p>Không có đơn hàng nào.</p>
       ) : (
         <Table>
@@ -97,10 +119,11 @@ const Order = () => {
               <TableHead>Trạng thái</TableHead>
               <TableHead>Ngày tạo</TableHead>
               <TableHead>Tổng tiền</TableHead>
+              <TableHead>Thao tác</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {orders.map((order) => (
+            {filteredOrders.map((order) => (
               <React.Fragment key={order._id}>
                 <TableRow>
                   <TableCell className="font-medium">{order.orderCode}</TableCell>
@@ -111,10 +134,10 @@ const Order = () => {
                     <span
                       className={`${
                         order.status === 'Pending'
-                          ? 'text-blue-500'
+                          ? 'text-gray-500'
                           : order.status === 'Cancelled'
                           ? 'text-red-500'
-                          : order.status === 'Completed'
+                          : order.status === 'Delivered'
                           ? 'text-green-500'
                           : ''
                       }`}
@@ -131,9 +154,9 @@ const Order = () => {
                   })}
                   </TableCell>
                   <TableCell 
-                    className={`font-bold ${order.paymentStatus === 'Paid' ? 'text-green-500' : 'text-red-500'}`}
+                    className={`font-bold text-lg`}
                   >
-                    {order.totalAmount}đ
+                    {order.totalAmount.toLocaleString()} đ
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2 justify-end"> {/* Sử dụng justify-end để căn sang phải */}

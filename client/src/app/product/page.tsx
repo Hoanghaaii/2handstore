@@ -1,7 +1,6 @@
-"use client";
-
+"use client"
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from 'next/navigation';
 import { useProductStore } from '../../store/productStore';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import Image from 'next/image';
@@ -12,15 +11,16 @@ import {
     PaginationLink,
     PaginationNext,
     PaginationPrevious,
-  } from "@/components/ui/pagination"
+} from "@/components/ui/pagination";
+import { formatDistanceToNow, isValid } from 'date-fns';
+import { vi } from 'date-fns/locale';
 
 const ProductsPage = () => {
   const { products, loading, error, fetchProducts, totalProducts } = useProductStore();
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 9;
   const totalPages = Math.ceil(totalProducts / productsPerPage);
-  
-  const router = useRouter(); // Sử dụng useRouter để điều hướng
+  const router = useRouter();
 
   useEffect(() => {
     fetchProducts(currentPage, productsPerPage);
@@ -39,7 +39,7 @@ const ProductsPage = () => {
   };
 
   const handleCardClick = (productId: string) => {
-    router.push(`/product/${productId}`); // Điều hướng tới trang chi tiết sản phẩm
+    router.push(`/product/${productId}`);
   };
 
   if (loading) {
@@ -55,48 +55,64 @@ const ProductsPage = () => {
   return (
     <div className="p-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 hover:cursor-pointer">
-        {products.map((product) =>{
-           return (
-            <Card 
-            key={product._id} 
-            className="max-w-md mx-auto hover:scale-105 duration-300"
-            onClick={() => handleCardClick(product._id)} // Thêm sự kiện onClick để điều hướng
-          >
-            <CardHeader>
-              <div className='flex items-center justify-between'>
-              <CardTitle className="text-4xl gradient-text">{product.name}</CardTitle>
-              {(product.status) === 'available' ? <CardTitle className='text-md text-green-500'>{product.status}</CardTitle> : <CardTitle className='text-md text-red-500'>{product.status}</CardTitle>}
-              </div>
-            </CardHeader>
-            <CardContent>
-              {Array.isArray(product.imageUrl) && product.imageUrl.length > 0 ? (
-                product.imageUrl.map((url, index) => (
-                  <Image
-                    key={index}
-                    src={url}
-                    alt={product.name}
-                    className="mb-4"
-                    width={500}
-                    height={500}
-                  />
-                ))
-              ) : (
-                <p>No image available.</p>
-              )}
-              <div className='flex '>
-                <p className='text-3xl gradient-text'>{product.price}</p>
-                <p className='text-slate-700 text-xl'>đ</p>
-              </div>
-              <div className='flex text-sm justify-end font-semibold '>
-                <p>{product.location || "Việt Nam"}</p>
-              </div>
-              <div className='flex text-sm justify-end'>
-                <p className='mr-1'>by:</p>
-                <p>{product.author}</p>
-              </div>
-            </CardContent>
-          </Card>
-        )})}
+        {products.map((product) => {
+          const createdAtDate = new Date(product.createdAt);
+          const isDateValid = isValid(createdAtDate);
+
+          return (
+            <Card
+              key={product._id}
+              className="max-w-md mx-auto hover:scale-105 duration-300"
+              onClick={() => handleCardClick(product._id)}
+            >
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-4xl gradient-text">{product.name}</CardTitle>
+                  <CardTitle className={`text-md ${product.status === 'available' ? 'text-green-500' : 'text-red-500'}`}>
+                    {product.status}
+                  </CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {Array.isArray(product.imageUrl) && product.imageUrl.length > 0 ? (
+                  product.imageUrl.map((url, index) => (
+                    <Image
+                      key={index}
+                      src={url}
+                      alt={product.name}
+                      className="mb-4 rounded-2xl"
+                      width={500}
+                      height={500}
+                    />
+                  ))
+                ) : (
+                  <p>No image available.</p>
+                )}
+                <div className="flex items-center justify-between">
+                  <div className="flex">
+                    <p className="text-4xl gradient-text">{product.price.toLocaleString('vi-VN')}</p>
+                    <p className="text-slate-700 text-xl">đ</p>
+                  </div>
+                  <div className="text-sm">
+                    <p>Đăng: {isDateValid ? formatDistanceToNow(createdAtDate, { addSuffix: true, locale: vi }) : 'Không xác định'}</p>
+                  </div>
+                </div>
+                <div className="flex">
+                  <p>Vị trí: {product.location || 'Việt Nam'}</p>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p>Danh mục: {product.category}</p>
+                  </div>
+                  <div className="flex text-sm justify-end">
+                    <p className="mr-1">by:</p>
+                    <p>{product.author}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
       <div className="mt-4">
         <Pagination>
@@ -104,7 +120,6 @@ const ProductsPage = () => {
             <PaginationItem>
               <PaginationPrevious onClick={handlePreviousPage} isActive={currentPage !== 1} />
             </PaginationItem>
-
             {[...Array(totalPages)].map((_, index) => (
               <PaginationItem key={index}>
                 <PaginationLink
@@ -116,7 +131,6 @@ const ProductsPage = () => {
                 </PaginationLink>
               </PaginationItem>
             ))}
-
             <PaginationItem>
               <PaginationNext onClick={handleNextPage} isActive={currentPage !== totalPages} />
             </PaginationItem>

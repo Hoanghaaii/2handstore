@@ -1,5 +1,5 @@
 import express from 'express';
-import { getProduct, getProductByCategory, getProductById, getProductByName, getProductBySeller, postProduct } from '../controllers/product.controller.js';
+import { deleteProduct, getProduct, getProductByCategory, getProductById, getProductByName, getProductBySeller, postProduct, updateProduct } from '../controllers/product.controller.js';
 import { verifyToken } from '../middlewares/verifyToken.js';
 import { uploadMiddleWare } from '../controllers/image.controller.js';
 
@@ -12,4 +12,6 @@ router.get('/:id', getProductById);
 router.get('/get-by-category/:category', getProductByCategory);
 router.get('/search/:name', getProductByName);
 router.post('/add-product',uploadMiddleWare ,verifyToken, postProduct);
+router.put('/update-product/:id', updateProduct)
+router.delete('/delete-product/:id', deleteProduct)
 export default router;

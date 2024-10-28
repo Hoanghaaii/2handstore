@@ -114,18 +114,13 @@ export const getOrders = async (req, res) => {
 export const cancelOrder = async (req, res) => {
     const { orderId } = req.params;
     const userId = req.userId;
-
+    console.log(userId)
     try {
         const order = await Order.findById(orderId);
 
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' });
         }
-
-        if (order.buyer.toString() !== userId) {
-            return res.status(403).json({ success: false, message: 'Unauthorized to cancel this order' });
-        }
-
         await Promise.all(order.products.map(async (item) => {
             const product = await Product.findById(item.productId);
             if (product) {
@@ -227,7 +222,10 @@ export const getOrdersBySeller = async (req, res) => {
         const sellerEmail = seller.email;
 
         // Lấy tất cả các đơn hàng có chứa sản phẩm của người bán (dựa trên email `author`)
-        const orders = await Order.find({ "products.author": sellerEmail }).populate('buyer', 'email name avatar');;
+        const orders = await Order.find({ "products.author": sellerEmail }).populate('buyer', 'email name avatar phoneNumber').populate({
+            path: 'products.productId',
+            select: 'name imageUrl' // select only the fields you need
+          });
 
         // Lọc các sản phẩm trong từng đơn hàng để chỉ lấy các sản phẩm thuộc người bán này
         const filteredOrders = orders.map(order => ({
