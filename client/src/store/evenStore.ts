@@ -5,7 +5,7 @@ import axios from 'axios';
 const API_URL = 
   process.env.NODE_ENV === "development" 
     ? `http://localhost:3001/api/event` 
-    : '/api/events';
+    : 'https://twohandstore.onrender.com/api/events';
 
 interface Event {
   _id: string;

@@ -4,7 +4,7 @@ import Cookies from 'js-cookie'
 const API_URL = 
   process.env.NODE_ENV === "development" 
     ? `http://localhost:3001/api/auth` 
-    : '/api/auth';
+    : 'https://twohandstore.onrender.com/api/auth';
 console.log(API_URL)
 interface User {
   _id: string;

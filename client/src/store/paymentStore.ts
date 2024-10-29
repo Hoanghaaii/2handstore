@@ -17,7 +17,7 @@ interface PaymentState {
 const API_URL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:3001/api/payment'
-    : '/api/payment';
+    : 'https://twohandstore.onrender.com/api/payment';
 
 export const usePaymentStore = create<PaymentState>((set) => ({
     checkoutUrl: null,

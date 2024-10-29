@@ -5,7 +5,7 @@ import axios from 'axios';
 const API_URL = 
   process.env.NODE_ENV === "development" 
     ? `http://localhost:3001/api/category` 
-    : '/api/category'; // Chỉnh sửa ở đây
+    : 'https://twohandstore.onrender.com/api/category'; // Chỉnh sửa ở đây
 
 interface Category {
   id: string;

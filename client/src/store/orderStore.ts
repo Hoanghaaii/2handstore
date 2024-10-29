@@ -57,7 +57,7 @@ interface OrderStore {
 const API_URL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:3001/api/order'
-    : '/api/order';
+    : 'https://twohandstore.onrender.com/api/order';
 
 export const useOrderStore = create<OrderStore>((set) => ({
   orders: [],

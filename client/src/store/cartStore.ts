@@ -23,7 +23,7 @@ interface CartStore {
 const API_URL =
   process.env.NODE_ENV === "development"
     ? `http://localhost:3001/api/cart`
-    : '/api/cart';
+    : 'https://twohandstore.onrender.com/api/cart';
 
 // Hàm tính toán tổng số lượng và tổng giá
 const calculateTotals = (items: CartItem[]) => {

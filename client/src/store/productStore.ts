@@ -34,7 +34,7 @@ interface ProductStore {
 const API_URL =
   process.env.NODE_ENV === "development"
     ? `http://localhost:3001/api/product`
-    : '/api/product';
+    : 'https://twohandstore.onrender.com/api/product';
 
 export const useProductStore = create<ProductStore>((set) => ({
   products: [],
