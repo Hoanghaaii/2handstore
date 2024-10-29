@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 3001;
 app.use(bodyParser.json()); // Sử dụng bodyParser cho toàn bộ app
 // Cấu hình CORS trước khi định nghĩa các route
 app.use(cors({
-    origin: process.env.CLIENT_URL, // Địa chỉ frontend của bạn
+    origin: "https://2handstore.vercel.app/", // Địa chỉ frontend của bạn
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Các phương thức bạn muốn cho phép
     credentials: true, // Nếu bạn cần cookie hoặc thông tin xác thực
 }));
