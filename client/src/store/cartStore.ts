@@ -50,7 +50,7 @@ export const useCartStore = create<CartStore>((set) => ({
       console.log('API response:', response.data);
 
       // Gán cartItems từ thuộc tính cart
-      const cartItems: CartItem[] = response.data.cart?.items.map((item: any) => ({
+      const cartItems: CartItem[] = response.data.cart?.items.map((item: { productId: string; productName: string; quantity: number; price: number; imageUrl: string[]; }) => ({
         productId: item.productId,
         productName: item.productName,
         quantity: item.quantity,
@@ -87,7 +87,7 @@ export const useCartStore = create<CartStore>((set) => ({
       console.log(response)
   
       if (response.data.success) {
-        const cartItems: CartItem[] = response.data.cart?.items.map((item: any) => ({
+        const cartItems: CartItem[] = response.data.cart?.items.map((item: { productId: string; quantity: number; price: number; imageUrl: string[]; productName: string; }) => ({
           productId: item.productId,
           quantity: item.quantity,
           price: item.price,
@@ -109,6 +109,7 @@ export const useCartStore = create<CartStore>((set) => ({
         set({ error: response.data.message, loading: false }); // Hiển thị lỗi từ backend
       }
     } catch (error) {
+      console.log(error)
       console.error('Có lỗi xảy ra: vượt quá số lượng!');
       set({ error: 'Có lỗi xảy ra: vượt quá số lượng trong kho!', loading: false });
     }
@@ -124,7 +125,7 @@ export const useCartStore = create<CartStore>((set) => ({
       );
   
       // Cập nhật lại giỏ hàng trong state với dữ liệu từ backend
-      const cartItems: CartItem[] = response.data.cart?.items.map((item: any) => ({
+      const cartItems: CartItem[] = response.data.cart?.items.map((item: { productId: string; quantity: number; price: number; imageUrl: string[]; }) => ({
         productId: item.productId,
         quantity: item.quantity,
         price: item.price,
@@ -142,13 +143,9 @@ export const useCartStore = create<CartStore>((set) => ({
         loading: false,
       });
   
-      // Gọi lại hàm fetchCartItems // Gọi hàm fetchCartItems
     } catch (error) {
       console.error('Error removing item from cart:', error);
       set({ error: 'Failed to remove item from cart', loading: false });
     }
   },
-  
-  
-  
 }));
