@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useProductStore } from '../../../store/productStore'; // Adjust the import path as necessary
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '../../../components/ui/table'; // Import UI components
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 const MyProducts = () => {
   const { products, loading, error, fetchProductsByOwner, setProductQuantityToZero } = useProductStore(); // Destructure the necessary values from the store
@@ -79,7 +80,7 @@ const MyProducts = () => {
             {filteredProducts.map(product => (
               <TableRow key={product._id}>
                 <TableCell className='text-xl'>
-                  <img src={product.imageUrl} alt='image' width={200} height={200} className='rounded-2xl' />
+                  <Image src={product.imageUrl} alt='image' width={200} height={200} className='rounded-2xl' />
                 </TableCell>
                 <TableCell className='text-xl'>{product.name}</TableCell>
                 <TableCell className='text-xl'>{product.quantity}</TableCell>

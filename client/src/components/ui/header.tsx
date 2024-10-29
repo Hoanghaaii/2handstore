@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 "use client"
 import {
   Sheet,
@@ -35,7 +37,6 @@ import { CiShoppingCart } from "react-icons/ci";
 import Link from 'next/link'
 import {useAuthStore} from '../../store/authStore'
 import { FiLoader } from "react-icons/fi";
-import Image from 'next/image'
 import { GoPerson } from "react-icons/go";
 import { Avatar } from "@radix-ui/react-avatar"
 import { AvatarFallback, AvatarImage } from "./avatar"

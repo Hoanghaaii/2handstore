@@ -17,7 +17,7 @@ const Register = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { signup, isLoading, message } = useAuthStore();
+  const { signup } = useAuthStore();
   // Hàm xử lý khi gửi biểu mẫu
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

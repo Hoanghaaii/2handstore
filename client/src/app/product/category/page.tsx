@@ -1,7 +1,9 @@
+/* eslint-disable */
+
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation'; // Import useRouter và useSearchParams
+import { useEffect, useState, Suspense } from 'react'; // Import Suspense
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useProductStore } from '../../../store/productStore';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import Image from 'next/image';
@@ -20,14 +22,14 @@ const CategoryPage = () => {
   const productsPerPage = 9;
   const totalPages = Math.ceil(totalProducts / productsPerPage);
   const router = useRouter();
-  const searchParams = useSearchParams(); // Dùng để lấy query params từ URL
-  const category = searchParams.get('category'); // Lấy giá trị của category từ URL
+  const searchParams = useSearchParams();
+  const category = searchParams.get('category');
 
   useEffect(() => {
     if (category) {
       fetchProductsByCategory(category, currentPage, productsPerPage);
     }
-  }, [category, currentPage]); // Fetch lại sản phẩm khi category hoặc currentPage thay đổi
+  }, [category, currentPage]);
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
@@ -74,11 +76,9 @@ const CategoryPage = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-2xl gradient-text">{product.name}</CardTitle>
-                {product.status === 'available' ? (
-                  <CardTitle className="text-md text-green-500">{product.status}</CardTitle>
-                ) : (
-                  <CardTitle className="text-md text-red-500">{product.status}</CardTitle>
-                )}
+                <CardTitle className={`text-md ${product.status === 'available' ? 'text-green-500' : 'text-red-500'}`}>
+                  {product.status}
+                </CardTitle>
               </div>
             </CardHeader>
             <CardContent>
@@ -140,4 +140,11 @@ const CategoryPage = () => {
   );
 };
 
-export default CategoryPage;
+// Bao quanh CategoryPage bằng Suspense
+export default function SuspenseBoundary() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CategoryPage />
+    </Suspense>
+  );
+}

@@ -15,7 +15,6 @@ const Cart: React.FC = () => {
     totalQuantity,
     totalPrice,
     loading,
-    error,
     fetchCartItems,
     addCartItem,
     removeCartItem,

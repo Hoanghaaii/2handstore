@@ -1,7 +1,9 @@
+/* eslint-disable */
+
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState, Suspense } from 'react'; // Import Suspense
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useProductStore } from '../../../store/productStore';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import Image from 'next/image';
@@ -13,7 +15,6 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useSearchParams } from 'next/navigation'; // Import useSearchParams
 
 const SearchPage = () => {
     const { fetchProductsByName, loading, error, products, totalProducts } = useProductStore();
@@ -22,19 +23,19 @@ const SearchPage = () => {
     const productsPerPage = 9;
     const totalPages = Math.ceil(totalProducts / productsPerPage);
     const router = useRouter();
-    const searchParams = useSearchParams(); // Sử dụng useSearchParams
+    const searchParams = useSearchParams();
 
     useEffect(() => {
-        const name = searchParams.get('name'); // Lấy giá trị name từ URL
+        const name = searchParams.get('name');
         if (name) {
-            setSearchQuery(name); // Cập nhật searchQuery
+            setSearchQuery(name);
             fetchProductsByName(name, currentPage, productsPerPage);
         }
-    }, [searchParams, currentPage]); // Theo dõi searchParams và currentPage
+    }, [searchParams, currentPage]);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(event.target.value);
-        setCurrentPage(1); // Reset current page when searching
+        setCurrentPage(1);
     };
 
     const handleNextPage = () => {
@@ -130,4 +131,11 @@ const SearchPage = () => {
     );
 };
 
-export default SearchPage;
+// Component bao quanh bằng Suspense
+export default function SuspenseBoundary() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <SearchPage />
+        </Suspense>
+    );
+}

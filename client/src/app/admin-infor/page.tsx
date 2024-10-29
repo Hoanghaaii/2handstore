@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter, FaPhoneAlt } from 'react-icons/fa';
+import { FaFacebook, FaInstagram, FaLinkedin, } from 'react-icons/fa';
 
 const AboutMePage: React.FC = () => {
   return (

@@ -126,7 +126,7 @@ export const useProductStore = create<ProductStore>((set) => ({
   updateProduct: async (id: string, updatedData: Partial<Product>) => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.put(`${API_URL}/update-product/${id}`, updatedData, {
+      await axios.put(`${API_URL}/update-product/${id}`, updatedData, {
         withCredentials: true,
       });
       set((state) => ({
@@ -146,7 +146,7 @@ export const useProductStore = create<ProductStore>((set) => ({
     set({ loading: true, error: null });
     try {
         const updatedData = { quantity: 0, status: 'sold' }; // Set quantity to 0 and status to 'Sold'
-        const response = await axios.put(`${API_URL}/update-product/${id}`, updatedData, { withCredentials: true });
+        await axios.put(`${API_URL}/update-product/${id}`, updatedData, { withCredentials: true });
         
         set((state) => ({
             products: state.products.map((product) =>

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 const Cart: React.FC = () => {
-  const { cartItems, totalQuantity, totalPrice, loading, error, fetchCartItems, addCartItem, removeCartItem } = useCartStore();
+  const { cartItems, totalQuantity, totalPrice, loading, fetchCartItems, addCartItem, removeCartItem } = useCartStore();
   useEffect(() => {
     fetchCartItems();
   }, [fetchCartItems]);
