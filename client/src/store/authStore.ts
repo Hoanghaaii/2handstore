@@ -106,7 +106,7 @@ export const useAuthStore = create<AuthState>((set) => {
         // Log the extracted token to verify it's correct
         console.log('Extracted token:', token);
         set({ user, token, isAuthenticated: true, isLoading: false });
-        Cookies.set('token', token, { expires: expirationDate }); // Lưu cookie token vào máy tính
+        Cookies.set('token', token, { expires: expirationDate, secure: true, sameSite: 'Lax' });
       } catch (error) {
         const errorMessage = axios.isAxiosError(error) ? 
             error.response?.data?.message || "Error logging in" : 
@@ -147,6 +147,7 @@ export const useAuthStore = create<AuthState>((set) => {
         const response = await axios.get(`${API_URL}/check-auth`, {
           withCredentials: true, // Đảm bảo rằng cookie được gửi kèm theo yêu cầu
         });
+        console.log(response)
         set({ user: response.data.user, isAuthenticated: true, isLoading: false });
       } catch (error) {
         console.error('Error during checkAuth:', error);
