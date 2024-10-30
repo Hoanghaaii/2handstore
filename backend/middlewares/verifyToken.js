@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
 
 export const verifyToken = (req, res, next) => {
-    const token = req.cookies.token; // Lấy token từ cookies
+    // Lấy token từ header Authorization
+    const token = req.headers.authorization?.split(' ')[1]; // Lấy phần token sau "Bearer "
     console.log("Received token:", token); // Ghi log token nhận được
 
     try {
@@ -15,14 +16,14 @@ export const verifyToken = (req, res, next) => {
         
         // Nếu token không hợp lệ hoặc không thể giải mã
         if (!decoded) {
-            return res.status(403).json({ success: false, message: "Token not valid" }); // Thay 401 bằng 403
+            return res.status(403).json({ success: false, message: "Token not valid" });
         }
 
         // Lưu ID người dùng vào req để sử dụng trong các route tiếp theo
         req.userId = decoded.userId;
         next(); // Tiến hành đến middleware hoặc route tiếp theo
     } catch (error) {
-        console.error("Error verifying token:", error.message); // Ghi log lỗi
-        return res.status(500).json({ success: false, message: "Server error" }); // Thay đổi thông điệp để người dùng không thấy thông tin nhạy cảm
+        console.error("Error verifying token:", error.message);
+        return res.status(500).json({ success: false, message: "Server error" });
     }
 };
