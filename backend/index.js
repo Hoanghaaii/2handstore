@@ -21,11 +21,21 @@ dotenv.config();
 const PORT = process.env.PORT || 3001;
 app.use(bodyParser.json()); // Sử dụng bodyParser cho toàn bộ app
 // Cấu hình CORS trước khi định nghĩa các route
+const allowedOrigins = ["https://2handstore.id.vn", "http://localhost:3000", "https://2handstore.vercel.app"];
+
 app.use(cors({
-    origin: "https://2handstore.vercel.app", // Địa chỉ frontend của bạn
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Các phương thức bạn muốn cho phép
-    credentials: true, // Nếu bạn cần cookie hoặc thông tin xác thực
+    origin: (origin, callback) => {
+        if (allowedOrigins.includes(origin) || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    credentials: true,
 }));
+
+
 
 app.use(express.json());
 app.use(cookieParser());
