@@ -39,6 +39,7 @@ export const useEventStore = create<EventStore>((set) => ({
 
   fetchEvents: async () => {
     set({ isLoading: true, error: null });
+    console.log(process.env.NODE_ENV);
     try {
       const response = await axios.get(API_URL, { withCredentials: true });
       set({ events: response.data.events, isLoading: false });
