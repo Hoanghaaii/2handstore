@@ -47,7 +47,7 @@ app.get('/', (req, res) => {
 
 // Định nghĩa các route sau khi cấu hình CORS
 app.use('/api/auth/', authRoutes);
-app.use('/api/event/', imageRoutes);
+app.use('/api/events/', imageRoutes);
 app.use('/api/event/', eventRoutes);
 app.use('/api/product/', productRoutes);
 app.use('/api/category/', categoryRouter);
