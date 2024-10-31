@@ -67,7 +67,7 @@ const ProductsPage = () => {
             >
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-4xl gradient-text">{product.name}</CardTitle>
+                  <CardTitle className="text-2xl gradient-text">{product.name}</CardTitle>
                   <CardTitle className={`text-md ${product.status === 'available' ? 'text-green-500' : 'text-red-500'}`}>
                     {product.status}
                   </CardTitle>
