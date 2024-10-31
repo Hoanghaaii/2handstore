@@ -48,7 +48,6 @@ export const signUp = async (req, res) => {
         await user.save();
         // Generate token and set cookie
         generateTokenAndSetCookie(res, user._id);
-        await sendVerificationEmail(user.email, verificationCode )
         // Remove password before sending response
         const userResponse = { ...user._doc };
         delete userResponse.password;
