@@ -38,7 +38,7 @@ const Register = () => {
         className: "bg-gradient-to-r from-green-100 to-green-200 text-green-500",
     });
       // Chuyển hướng đến trang đăng nhập hoặc trang nào đó
-      router.push('/auth/verify-email');
+      router.push('/auth/signin');
     } catch (err) {
       setError(err instanceof Error ? err.message : "Đã có lỗi xảy ra");
     } finally {
