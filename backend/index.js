@@ -21,7 +21,7 @@ dotenv.config();
 const PORT = process.env.PORT || 3001;
 app.use(bodyParser.json()); // Sử dụng bodyParser cho toàn bộ app
 // Cấu hình CORS trước khi định nghĩa các route
-const allowedOrigins = ["https://2handstore.id.vn", "https://2handstore.vercel.app"];
+const allowedOrigins = ["https://2handstore.id.vn", "https://2handstore.vercel.app", "http://localhost:3000"];
 
 app.use(cors({
     origin: (origin, callback) => {

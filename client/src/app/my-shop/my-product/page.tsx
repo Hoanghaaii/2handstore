@@ -80,7 +80,7 @@ const MyProducts = () => {
             {filteredProducts.map(product => (
               <TableRow key={product._id}>
                 <TableCell className='text-xl'>
-                  <Image src={product.imageUrl} alt='image' width={200} height={200} className='rounded-2xl' />
+                  <Image src={`${product.imageUrl}`} alt='image' width={200} height={200} className='rounded-2xl' />
                 </TableCell>
                 <TableCell className='text-xl'>{product.name}</TableCell>
                 <TableCell className='text-xl'>{product.quantity}</TableCell>

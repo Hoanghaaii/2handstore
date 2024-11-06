@@ -17,7 +17,6 @@ export default function Home() {
           </div>
           <div className="flex items-center justify-between">
             <Infor src="https://github.com/shadcn.png" fallbackText="HH" role="Fullstack Intern(Nodejs, Nextjs)" description="Sinh viên năm 4 Trường đại học Công Nghiệp Hà Nội (Chuyên ngành CNTT)" name="Vũ Hoàng Hải (Admin)" />
-            <Infor src="https://github.com/shadcn.png" fallbackText="HH" role="Fullstack Intern(Nodejs, Nextjs)" description="Sinh viên năm 4 Trường đại học Kinh Tế Kỹ Thuật Công Nghiệp Hà Nội (Chuyên ngành CNTT)" name="Dương Việt Anh (Cu li)" />
           </div>
         </div>
 

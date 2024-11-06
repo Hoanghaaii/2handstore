@@ -2,9 +2,8 @@ import jwt from 'jsonwebtoken';
 
 export const verifyToken = (req, res, next) => {
     // Lấy token từ header Authorization
-    const token = req.headers.authorization?.split(' ')[1]; // Lấy phần token sau "Bearer "
-    console.log("Received token:", token); // Ghi log token nhận được
-
+    const token = req.headers.authorization?.split(' ')[1] || req.cookies.token;
+    console.log("Received token:", token);
     try {
         // Kiểm tra xem token có tồn tại không
         if (!token) {

@@ -30,7 +30,7 @@ const VerifyEmail = () => {
         duration: 2000,
         className: "bg-gradient-to-r from-green-100 to-green-200 text-green-500",
       });
-      router.push('/auth/signin'); // Hoặc trang bạn muốn
+      router.push('/'); // Hoặc trang bạn muốn
     } catch (err) {
       setError(err instanceof Error ? err.message : "Đã có lỗi xảy ra");
       toast(error, {
